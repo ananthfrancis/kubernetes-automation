@@ -75,6 +75,7 @@
 > Install Helm
 
   Execute below commands to install helm.
+
   wget https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz
   tar -xvf helm-v2.14.1-linux-amd64.tar.gz
   mv linux-amd64/helm /usr/local/bin/helm
@@ -82,8 +83,13 @@
 > Install tiller
 
   1) Execute below command to create service account and cluster rolebinding
+
     kubectl create -f rbac-config.yaml
+    
   2) Execute below command to install tiller.
+  
     helm init --service-account tiller --history-max 200
+
   3) Execute below command to check the tiller pod created in kube-system
+  
     kubectl get pods --namespace kube-system
