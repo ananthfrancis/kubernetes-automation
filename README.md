@@ -2,7 +2,7 @@
 
 Kubernetes HA Setup:
   
-Setup HA Proxy:
+> Setup HA Proxy:
   1)Login the server where you are going run haproxy 
 
   2) Execute below commands
@@ -11,7 +11,7 @@ Setup HA Proxy:
   3) Copy the HA_PROXY_Config file content into /etc/haproxy/haproxy.cfg file.
       systemctl restart haproxy
 
-Common Steps for Master and Worker node:
+> Common Steps for Master and Worker node:
 
    Install Docker using below command:
       curl https://get.docker.com | sh -
@@ -25,7 +25,7 @@ Common Steps for Master and Worker node:
    5) Disable the swap using below command.
       swapoff -a
 
-Master Node Setup:
+> Master Node Setup:
    1) Copy the kubeadm-config.yaml file into one of the master node.
    2) Run the below command to initialise the kubernetes cluster.
       kubeadm init --config=kubeadm-config.yaml --upload-certs
@@ -41,7 +41,7 @@ Master Node Setup:
     --discovery-token-ca-cert-hash sha256:c17eaac671c571bc40d56a4a255efd3494e523861cbdd1fa1fb1f44dcfa2237e \
     --experimental-control-plane --certificate-key 7303ec096e8dc75b1a0ab69d4ef168bfda8ddaf31e2fde89a55f5fab2cea1e8a
 
-Worker Node Setup:
+> Worker Node Setup:
    1) Copy the worker node join command from the init command's result and run it in the worker node which you want to join.
       kubeadm join 35.247.173.250:6443 --token pzt5xl.z7bm68alodd74wr3 \
       --discovery-token-ca-cert-hash sha256:c17eaac671c571bc40d56a4a255efd3494e523861cbdd1fa1fb1f44dcfa2237e
