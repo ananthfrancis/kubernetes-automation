@@ -97,19 +97,15 @@
 # Monitoring 
 
   Create monitoring namespace
-  
   kubectl create ns monitoring
 
   Create prometheus cluster role which will allow you to scrape.
-  
   kubectl apply -f prometheus_cluster_role.yaml
 
   Create prometheus configmap which will contains prometheus configuration.
-  
   kubectl apply -f prometheus_cm.yaml
 
   Create prometheus deployment and service using below command.
-  
   kubectl apply -f prometheus_deployment_svc.yaml
 
   Service type is nodeport.
