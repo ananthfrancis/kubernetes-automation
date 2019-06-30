@@ -3,8 +3,8 @@
 Kubernetes HA Setup:
   
 > Setup HA Proxy:
-  1)Login the server where you are going run haproxy 
-
+  
+  1)Login the server where you are going run haproxy.
   2) Execute below commands
       apt-get update
       apt-get install haproxy
