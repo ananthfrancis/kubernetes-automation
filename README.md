@@ -1,6 +1,6 @@
-# Kubernetes Test
 
-Kubernetes HA Setup:
+
+# Kubernetes HA Setup:
   
 > Setup HA Proxy:
   
