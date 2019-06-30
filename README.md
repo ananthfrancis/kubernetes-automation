@@ -127,22 +127,30 @@
 
 >  Elastic Search
 
-    1. Create required persistent volume using below command.
-
+   Create required persistent volume using below command.
+        
         kubectl create -f pv-elastic-search.yaml
         
-    2. Create elastic search service using below command.
+   Create elastic search service using below command. 
         
         kubectl create -f svc-elastic-search.yaml
     
-    3. Create elastic search deployment using below command.
-        kubectl create -f elastic-search-ss.yaml
+   Create elastic search deployment using below command.
         
-    4. Create kibana service and deployment.
+        kubectl create -f elastic-search-ss.yaml
+
+> Kibana
+        
+   Create kibana service and deployment.
+        
         kubectl create -f kibana-service-deployment.yaml
         
-    5. Create fluentd service account, cluster role and cluster role binding using below command.
+> Fluentd
+
+   Create fluentd service account, cluster role and cluster role binding using below command.
+        
         kubectl create -f sa-fluentd.yaml
         
-    6. create fluentd deamon set which will aggregate the logs from all the node and send it to elastic search
+   create fluentd deamon set which will aggregate the logs from all the node and send it to elastic search
+        
         kubectl create -f ds-fluentd.yaml
