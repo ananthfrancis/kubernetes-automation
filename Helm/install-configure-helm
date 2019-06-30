@@ -1,0 +1,13 @@
+wget https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz
+
+tar -xvf helm-v2.14.1-linux-amd64.tar.gz
+
+mv linux-amd64/helm /usr/local/bin/helm
+
+kubectl create -f rbac-config.yaml
+
+helm init --service-account tiller --history-max 200
+
+kubectl get pods --namespace kube-system
+
+

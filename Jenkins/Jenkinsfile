@@ -1,0 +1,28 @@
+pipeline {
+    agent { label 'master' }
+    stages {
+        stage('cleanup') {
+            steps {
+                sh "rm -rf ./*"
+            }
+        }
+        stage('Checkout the code') {
+            steps {
+                sh "git clone https://github.com/kubernetes/examples.git"
+            }
+        }
+        stage('Prepare the Helm Chart') {
+            steps {
+                sh "helm create guestbook"
+                sh "rm guestbook/templates/*.yaml"
+                sh "cp examples/guestbook/*.yaml guestbook/templates/"
+            }
+        }
+        stage('Package and Install') {
+            steps {
+                sh "helm package guestbook"
+                sh "helm install guestbook-0.1.0.tgz --namespace development"
+            }
+        }
+    }
+}
