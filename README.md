@@ -49,6 +49,7 @@
 # Setup Jenkins and CICD Pipeline
 
 > Jenkins installation
+
   wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
   echo "deb https://pkg.jenkins.io/debian-stable binary/" >> /etc/apt/sources.list
   apt-get update
@@ -57,5 +58,7 @@
 
   Copy ~/.kube directory from kubernetes cluster to Jenkins server and copy it under jenkins home directory.
   Make sure that jenkins userid has permission to that file.
+
 > Jenkins Job Creation
+
   1) Create pipeline job in jenkins and use the Jenkins/Jenkinsfile in this repo.
