@@ -1,15 +1,28 @@
 
-### Running Wrapper Script
-# Terraform
-   Please replace the credentials file in third line of main.tf where it expects GCP authentication file.
+# Running Wrapper Script
+## Terraform
+   Please replace the credentials file in third line of main.tf where it expects GCP authentication file.We use terraform to build our infrastructure which Google compute engine and load balancer.
 
-# Ansible
+## Ansible
    In ansible directory, we have dynamic inventory file and few playbooks to automate the task.
+   We use ansible to setup kubernetes master, slave, and jenkins server.
 
-# wrapper_script
+   Playbook Used:
+      master-cluster.yml:
+         It will be used for setting up kubernetes HA environment,
+      helm-installation.yml:
+         It will be used to setup helm.
+      monitoring.yml:
+         It will be used for setting up prometheus and grafana.
+      logging.yml:
+         It will be used to setup our EFK stack.
+      Jenkins-config.yml:
+         It will be used to setup jenkins node and configure the jenkins job.
+
+## wrapper_script
    wrapper script will call both terraform and ansible to automate entire provisioning and configuration.
 
-# Kubernetes HA Setup
+# Detailed Explaination If you want to Run manually:
 > Common Steps for Master and Worker node
 
    Install Docker using below command:
