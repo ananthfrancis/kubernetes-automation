@@ -7,16 +7,16 @@
    In ansible directory, we have dynamic inventory file and few playbooks to automate the task.
    We use ansible to setup kubernetes master, slave, and jenkins server.
 
-   Playbook Used:
-      master-cluster.yml:
+   ### Playbook Used:
+      > master-cluster.yml:
          It will be used for setting up kubernetes HA environment,
-      helm-installation.yml:
+      > helm-installation.yml:
          It will be used to setup helm.
-      monitoring.yml:
+      > monitoring.yml:
          It will be used for setting up prometheus and grafana.
-      logging.yml:
+      > logging.yml:
          It will be used to setup our EFK stack.
-      Jenkins-config.yml:
+      > Jenkins-config.yml:
          It will be used to setup jenkins node and configure the jenkins job.
 
 ## wrapper_script
