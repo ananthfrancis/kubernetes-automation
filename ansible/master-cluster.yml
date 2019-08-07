@@ -1,0 +1,113 @@
+- name: Get LB IP
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Get the Terraform Output
+      shell: terraform output ip-external-lb
+      args:
+        chdir: ./..
+      register: lb_output
+
+- hosts: kube_master_primary
+  become: yes
+  user: ubuntu
+  tasks:
+    - name: Copy kube config file
+      copy: 
+        src: ../kubeadm-config.yaml
+        dest: /home/ubuntu/
+    
+    - name: Replace LB variable with value
+      replace:
+        path: /home/ubuntu/kubeadm-config.yaml
+        regexp: 'LB_IP'
+        replace: "{{ hostvars['127.0.0.1'].lb_output.stdout }}"
+    - name: Wait for kubeadm
+      pause:
+        minutes: 2
+    - name: Start the cluster
+      shell: kubeadm init --config=./kubeadm-config.yaml --upload-certs >> cluster.txt
+      args:
+        chdir: /home/ubuntu/
+        creates: cluster.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: ubuntu
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/ubuntu/.kube/config
+        remote_src: yes
+        owner: ubuntu
+
+    - name: install Pod network
+      become: yes
+      become_user: ubuntu
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml >> pod_setup.txt
+      args:
+        chdir: /home/ubuntu/
+        creates: pod_setup.txt
+    - name: Get certificate output
+      shell: cat cluster.txt | grep "\-\-control-plane"
+      args:
+        chdir: /home/ubuntu
+        creates: certificate.txt
+      register: certificate_key
+    - name: Check certificate output
+      shell: echo {{ certificate_key.stdout }} > output.txt
+      args:
+        chdir: /home/ubuntu
+        creates: output.txt
+    - name: Get Join Token
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+    - name: Debug command  
+      debug:
+        msg: "{{ join_command_raw }}"
+    - name: set join command
+      set_fact:
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+    - name: Debug command  stdout
+      debug:
+        msg: "{{ join_command }}"
+- hosts: kube_master_secondary
+  become: yes
+  tasks:
+    - name: Debug command  stdout
+      debug:
+        msg: "{{ hostvars[groups['kube_master_primary'][0]].join_command }}"
+    - name: check the join command
+      shell: echo {{ hostvars[groups['kube_master_primary'][0]].join_command}} {{ hostvars[groups['kube_master_primary'][0]].certificate_key.stdout}} > control-plane-join.txt
+      args:
+        chdir: /home/ubuntu
+        creates: control-plane-join.txt
+    - name: Join Second Master
+      shell: "{{ hostvars[groups['kube_master_primary'][0]].join_command}} {{ hostvars[groups['kube_master_primary'][0]].certificate_key.stdout}}"
+
+- name: Get LB IP
+  hosts: 127.0.0.1
+  connection: local
+  tasks:    
+    - name: Join Second Master to LB
+      shell: gcloud compute target-pools add-instances kube-master-target --instances k8s-master-2 --instances-zone asia-southeast1-b
+    
+- hosts: kube_node
+  become: yes
+  tasks:
+    - name: check the node join command
+      shell: echo {{ hostvars[groups['kube_master_primary'][0]].join_command }} > control-plane-join.txt
+      args:
+        chdir: /home/ubuntu
+        creates: control-plane-join.txt
+    - name: Join Node
+      shell: "{{ hostvars[groups['kube_master_primary'][0]].join_command}}"
+    
+    
+
+    

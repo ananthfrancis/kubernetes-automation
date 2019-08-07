@@ -1,0 +1,16 @@
+plugin: gcp_compute
+zones:
+ - asia-southeast1-b
+projects:
+  - 'positive-water-248212'
+filters: []
+groups:
+  kube-node: "'k8s-node-' in name"
+  kube-master: "'k8s-master-' in name"
+  kube-master-primary: "'k8s-master-1' in name"
+  kube-master-secondary: "'k8s-master-2' in name"
+  jenkins: "'jenkins' in name"
+scopes:
+  - https://www.googleapis.com/auth/compute
+service_account_file: /Users/ananthfrancis/Documents/test/kubernetes-test/MyFirstProject-26a1a61564b9.json
+auth_kind: serviceaccount

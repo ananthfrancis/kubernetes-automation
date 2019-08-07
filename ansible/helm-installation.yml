@@ -1,0 +1,34 @@
+- hosts: kube_master_primary
+  remote_user: ubuntu
+  become: yes
+  tasks:
+    - name: Download the helm
+      get_url: url=https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz dest=/home/ubuntu
+    - name: Extract the helm
+      unarchive:
+        src: /home/ubuntu/helm-v2.14.1-linux-amd64.tar.gz
+        dest: /home/ubuntu
+        remote_src: yes
+    - name: move the helm package
+      shell: mv linux-amd64/helm /usr/local/bin/helm
+      args:
+        chdir: /home/ubuntu
+    - name: Copy config file
+      copy: 
+        src: ../Helm/rbac-config.yaml
+        dest: /home/ubuntu/
+    - name: move the helm package
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f rbac-config.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: init the helm
+      become: yes
+      become_user: ubuntu
+      shell: helm init --service-account tiller --history-max 200
+      args:
+        chdir: /home/ubuntu
+
+    
+      

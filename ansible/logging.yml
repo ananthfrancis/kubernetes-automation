@@ -1,0 +1,86 @@
+- hosts: kube_master_primary
+  remote_user: ubuntu
+  become: yes
+  tasks:
+    - name: Create Logging namespace
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create ns logging
+      args:
+        chdir: /home/ubuntu
+    - name: Copy elastic search pv config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../logging/pv-elastic-search.yaml
+        dest: /home/ubuntu/
+    
+    - name: Copy elastic search service  config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../logging/svc-elastic-search.yaml
+        dest: /home/ubuntu/
+    - name: Copy elastic search stateful set config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../logging/elastic-search-ss.yaml
+        dest: /home/ubuntu/
+    - name: Copy kibana svc config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../logging/kibana-service-deployment.yaml
+        dest: /home/ubuntu/
+    - name: Copy Service account for fluentd file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../logging/sa-fluentd.yaml
+        dest: /home/ubuntu/
+    - name: Copy Deploy Deamon Set for fluentd file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../logging/ds-fluentd.yaml
+        dest: /home/ubuntu/
+    - name: Deploy elastic search pv
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f pv-elastic-search.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy elastic search service
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f svc-elastic-search.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy elastic search stateful set
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f elastic-search-ss.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy kibana service
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f kibana-service-deployment.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy Service account for fluentd
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f sa-fluentd.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy Deamon Set for fluentd
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f ds-fluentd.yaml
+      args:
+        chdir: /home/ubuntu
+      
+    
+      

@@ -1,0 +1,61 @@
+- hosts: kube_master_primary
+  remote_user: ubuntu
+  become: yes
+  tasks:
+    
+    - name: move the helm package
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create ns monitoring
+      args:
+        chdir: /home/ubuntu
+    - name: Copy prometheus_cluster_role config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../Monitoring/prometheus_cluster_role.yaml
+        dest: /home/ubuntu/
+    
+    - name: Copy prometheus_cm config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../Monitoring/prometheus_cm.yaml
+        dest: /home/ubuntu/
+    - name: Copy prometheus_deployment_svc config file
+      become: yes
+      become_user: ubuntu
+      copy: 
+        src: ../Monitoring/prometheus_deployment_svc.yaml
+        dest: /home/ubuntu/
+    - name: Deploy Prometheus Cluster role
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f prometheus_cluster_role.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy Prometheus configmap
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f prometheus_cm.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Deploy Prometheus and create service
+      become: yes
+      become_user: ubuntu
+      shell: kubectl create -f prometheus_deployment_svc.yaml
+      args:
+        chdir: /home/ubuntu
+    - name: Wait for tiller pod
+      pause:
+        minutes: 2
+    - name: Deploy Grafana using helm
+      become: yes
+      become_user: ubuntu
+      shell: helm install stable/grafana -n grafana --namespace monitoring
+      args:
+        chdir: /home/ubuntu
+
+      
+    
+      

@@ -1,15 +1,16 @@
 
-### Running Wrapper Script
-# Terraform
-   Please replace the credentials file in third line of main.tf where it expects GCP authentication file.
-
-# Ansible
-   In ansible directory, we have dynamic inventory file and few playbooks to automate the task.
-
-# wrapper_script
-   wrapper script will call both terraform and ansible to automate entire provisioning and configuration.
 
 # Kubernetes HA Setup
+  
+> Setup HA Proxy
+  
+  1)Login the server where you are going run haproxy.
+  2) Execute below commands
+      apt-get update
+      apt-get install haproxy
+  3) Copy the HA_PROXY_Config file content into /etc/haproxy/haproxy.cfg file.
+      systemctl restart haproxy
+
 > Common Steps for Master and Worker node
 
    Install Docker using below command:

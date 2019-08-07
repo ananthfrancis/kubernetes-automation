@@ -1,0 +1,86 @@
+- hosts: kube_master_primary
+  become: yes
+  tasks:
+    - fetch:
+        src: /home/ubuntu/.kube/config
+        dest: ../config
+        flat: yes
+- hosts: jenkins
+  become: yes
+  tasks:
+    - name: Install Git
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+        - git
+        - openjdk-8-jdk
+    - name: Download the jenkins-war
+      get_url: url=http://mirrors.jenkins.io/war-stable/latest/jenkins.war dest=/root
+    - name: Run the Jenkins war
+      shell: nohup java -Djenkins.install.runSetupWizard=false -jar jenkins.war &
+      args:
+        chdir: /root
+    - name: Create .kube dir 
+      file:
+        path: /root/.kube
+        state: directory
+        mode: '0755'
+    - name: Transfer kubeconfig file from kube primary to jenkins node
+      copy:
+        src: ../config
+        dest: /root/.kube/config
+    - name: copy jenkins job config file
+      copy:
+        src: ../config.xml
+        dest: /tmp/config.xml
+    - name: Download the helm
+      get_url: url=https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz dest=/home/ubuntu
+    - name: Extract the helm
+      unarchive:
+        src: /home/ubuntu/helm-v2.14.1-linux-amd64.tar.gz
+        dest: /home/ubuntu
+        remote_src: yes
+    - name: move the helm package
+      shell: mv linux-amd64/helm /usr/local/bin/helm
+      args:
+        chdir: /home/ubuntu
+    - name: init the helm client
+      shell: helm init -c
+      args:
+        chdir: /home/ubuntu
+    - name: Install git plugin
+      uri:
+        url: http://localhost:8080/pluginManager/installNecessaryPlugins
+        method: POST
+        body: '<jenkins><install plugin="git@latest" /></jenkins>'
+        status_code: 302
+        body_format: json
+    - name: Jenkins Restart
+      uri:
+        url: http://localhost:8080/restart
+        method: POST
+        body: ''
+        status_code: 302
+        body_format: json
+    - name: Wait for git plugin
+      pause:
+        minutes: 1
+    - name: Install pipeline plugin
+      uri:
+        url: http://localhost:8080/pluginManager/installNecessaryPlugins
+        method: POST
+        body: '<jenkins><install plugin="workflow-aggregator@latest" /></jenkins>'
+        status_code: 302
+        body_format: json
+    - name: Wait for pipeline plugin
+      pause:
+        minutes: 1
+    - name: create new job
+      shell: curl -s -XPOST 'http://localhost:8080/createItem?name=test-pipeline' --data-binary @/tmp/config.xml -H "Content-Type:text/xml"
+      args:
+        chdir: /root
+
+    
+    

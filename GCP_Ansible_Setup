@@ -1,0 +1,40 @@
+SSH Key Generation:
+    ssh-keygen -t rsa -b 4096 -C "ansible"
+    cat ~/.ssh/id_rsa.pub 
+
+Add the above content in Compute Engine ⇒ Metadata ⇒ SSH Keys tab.
+
+Ansible Installation:
+    pip install ansible
+
+#You will also need to install two additional packages in order to gather information about GCP-based hosts using GCE Dynamic Inventory
+    pip install requests google-auth
+
+Created directory ansible/inventories
+Added ansible.cfg file
+Added node_gcp.yaml
+
+ansible-inventory --graph -i ansible/inventories/node_gcp.yml 
+ansible-inventory --list -i ansible/inventories/node_gcp.yml --yaml
+
+Create environment variable 
+    export ANSIBLE_CONFIG=/Users/ananthfrancis/Documents/test/kubernetes-test/ansible/inventories/ansible.cfg
+
+Create non-root user:
+    ansible-playbook -i ansible/inventories/node_gcp.yml ansible/non-root-user.yml
+
+Configure Master Primary Node:
+    ansible-playbook -i ansible/inventories/node_gcp.yml ansible/master-cluster.yml
+
+Configure Helm:
+   ansible-playbook -i ansible/inventories/node_gcp.yml ansible/helm-installation.yml
+
+Configure Monitoring:
+   ansible-playbook -i ansible/inventories/node_gcp.yml ansible/monitoring.yml
+
+Configure Logging:
+   ansible-playbook -i ansible/inventories/node_gcp.yml ansible/logging.yml
+
+Configure Jenkins:
+   ansible-playbook -i ansible/inventories/node_gcp.yml ansible/Jenkins-config.yml
+
