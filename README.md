@@ -22,6 +22,35 @@
 ## wrapper_script
    wrapper script will call both terraform and ansible to automate entire provisioning and configuration.
 
+## Blue/Green Deployment:
+   Blue/Green Deployment will be helpful to achieve zero downtime deployment with proper testing.
+   In our case, we are running a guest application which kubernetes github repository provided.
+   
+   To demonstrate the blue green deployment, we can create another deployment yaml file which will use different version of guestbook image.
+
+   Create Green Deployment:
+   > kubectl create -f Blue-Green/green-guest.yml -n development
+
+   After testing the new version of green deployment, Patch the Current service to point to new version like below.
+   > kubectl patch service frontend -p '{"spec":{"selector":{"version": "1.0.1"}}}'
+
+## Canary Deployment:
+   Canary Deployment will be helpful to identify the production bugs in the new code which will affect very small subset of customer.
+
+   To demonstrate the canary deployment, we will create new deployment with new version but it will have only one replica and our currently running deployment has 3 replica. Once we are confident in our newly created application, we can scale the deployment with 3 replicas and old version into 0 replicas.
+
+   Create canary Deployment with 1 replica:
+   > kubectl create -f canary-deployment/canary.yml -n development
+
+   Once we are confident with new application, we can patch the Deployment with more replica.
+   > kubectl scale deployments/frontend-canary --replicas=3
+   > kubectl scale deployments/frontend --replicas=0
+
+
+
+ 
+
+
 # Detailed Explaination If you want to Run manually:
 > Common Steps for Master and Worker node
 
