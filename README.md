@@ -52,7 +52,7 @@
 
 
 # Detailed Explaination If you want to Run manually:
-> Common Steps for Master and Worker node
+## Common Steps for Master and Worker node
 
    Install Docker using below command:
       curl https://get.docker.com | sh -
@@ -66,7 +66,7 @@
    5) Disable the swap using below command.
       swapoff -a
 
-> Master Node Setup
+## Master Node Setup
    1) Copy the kubeadm-config.yaml file into one of the master node.
    2) Run the below command to initialise the kubernetes cluster.
       kubeadm init --config=kubeadm-config.yaml --upload-certs
@@ -82,14 +82,14 @@
     --discovery-token-ca-cert-hash sha256:c17eaac671c571bc40d56a4a255efd3494e523861cbdd1fa1fb1f44dcfa2237e \
     --experimental-control-plane --certificate-key 7303ec096e8dc75b1a0ab69d4ef168bfda8ddaf31e2fde89a55f5fab2cea1e8a
 
-> Worker Node Setup
+## Worker Node Setup
    1) Copy the worker node join command from the init command's result and run it in the worker node which you want to join.
       kubeadm join 35.247.173.250:6443 --token pzt5xl.z7bm68alodd74wr3 \
       --discovery-token-ca-cert-hash sha256:c17eaac671c571bc40d56a4a255efd3494e523861cbdd1fa1fb1f44dcfa2237e
     
 # Setup Jenkins and CICD Pipeline
 
-> Jenkins installation
+## Jenkins installation
 
   wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
   echo "deb https://pkg.jenkins.io/debian-stable binary/" >> /etc/apt/sources.list
@@ -100,36 +100,36 @@
   Copy ~/.kube directory from kubernetes cluster to Jenkins server and copy it under jenkins home directory.
   Make sure that jenkins userid has permission to that file.
 
-> Jenkins Job Creation
+## Jenkins Job Creation
 
   1) Create pipeline job in jenkins and use the Jenkins/Jenkinsfile in this repo.
 
 # Create NameSpace
 
-> Development Namespace
+## Development Namespace
 
   Create development name space using below command.
   kubectl create ns development
 
 # Setup Helm
 
-> Install Helm
+## Install Helm
 
   Execute below commands to install helm.
 
-  wget https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz
-  tar -xvf helm-v2.14.1-linux-amd64.tar.gz
-  mv linux-amd64/helm /usr/local/bin/helm
+  > wget https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz
+  > tar -xvf helm-v2.14.1-linux-amd64.tar.gz
+  > mv linux-amd64/helm /usr/local/bin/helm
 
-> Install tiller
+## Install tiller
 
   1) Execute below command to create service account and cluster rolebinding
 
-    kubectl create -f rbac-config.yaml
+   > kubectl create -f rbac-config.yaml
     
   2) Execute below command to install tiller.
   
-    helm init --service-account tiller --history-max 200
+   > helm init --service-account tiller --history-max 200
 
   3) Execute below command to check the tiller pod created in kube-system
   
@@ -137,61 +137,61 @@
 
 # Monitoring 
 
-> Prometheus
+## Prometheus
 
   Create monitoring namespace
   
-    kubectl create ns monitoring
+   > kubectl create ns monitoring
 
   Create prometheus cluster role which will allow you to scrape.
   
-    kubectl apply -f prometheus_cluster_role.yaml
+   > kubectl apply -f prometheus_cluster_role.yaml
 
   Create prometheus configmap which will contains prometheus configuration.
   
-    kubectl apply -f prometheus_cm.yaml
+   > kubectl apply -f prometheus_cm.yaml
 
   Create prometheus deployment and service using below command.
   
-    kubectl apply -f prometheus_deployment_svc.yaml
+   > kubectl apply -f prometheus_deployment_svc.yaml
 
   Service type is nodeport.
   Once pod has been started successfully, you can hit the any of the kubernetes node IP with assigned port number.
 
-> Grafana
+## Grafana
 
   Create grafana using below helm command
 
-    helm install stable/grafana -n grafana --namespace monitoring
+   > helm install stable/grafana -n grafana --namespace monitoring
   
 # Logging
 
->  Elastic Search
+## Elastic Search
 
    Create required persistent volume using below command.
         
-        kubectl create -f pv-elastic-search.yaml
+      > kubectl create -f pv-elastic-search.yaml
         
    Create elastic search service using below command. 
         
-        kubectl create -f svc-elastic-search.yaml
+      > kubectl create -f svc-elastic-search.yaml
     
    Create elastic search deployment using below command.
         
-        kubectl create -f elastic-search-ss.yaml
+      > kubectl create -f elastic-search-ss.yaml
 
-> Kibana
+## Kibana
         
    Create kibana service and deployment.
         
-        kubectl create -f kibana-service-deployment.yaml
+      > kubectl create -f kibana-service-deployment.yaml
         
-> Fluentd
+# Fluentd
 
    Create fluentd service account, cluster role and cluster role binding using below command.
         
-        kubectl create -f sa-fluentd.yaml
+      > kubectl create -f sa-fluentd.yaml
         
    create fluentd deamon set which will aggregate the logs from all the node and send it to elastic search
         
-        kubectl create -f ds-fluentd.yaml
+      > kubectl create -f ds-fluentd.yaml
